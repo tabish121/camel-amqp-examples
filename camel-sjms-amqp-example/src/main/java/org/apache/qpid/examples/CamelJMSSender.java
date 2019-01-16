@@ -42,14 +42,26 @@ public class CamelJMSSender {
         });
 
         ProducerTemplate template = context.createProducerTemplate();
+
         context.start();
 
-        //Send 10 messages
+        Exception failure = null;
+
+        // Send 10 messages, with reports of any failures
         for (int i = 0; i < 10; i++) {
-            template.sendBody("direct:start", "Test Message: " + i);
+            try {
+                template.sendBody("direct:start", "Test Message: " + i);
+            } catch (Exception jmsEx) {
+                System.out.print("Failed sending message: " + i);
+                failure = jmsEx;
+            }
         }
 
         context.stop();
+
+        if (failure != null) {
+            throw failure;
+        }
     }
 
     public static void main(String[] args) {
