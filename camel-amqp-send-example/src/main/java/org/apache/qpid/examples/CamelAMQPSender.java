@@ -19,25 +19,25 @@ package org.apache.qpid.examples;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.sjms.SjmsComponent;
+import org.apache.camel.component.amqp.AMQPComponent;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.qpid.jms.JmsConnectionFactory;
 
-public class CamelJMSSender {
+public class CamelAMQPSender {
 
     public void runExample() throws Exception {
         JmsConnectionFactory cf = new JmsConnectionFactory("amqp://localhost:5672");
 
-        SjmsComponent component = new SjmsComponent();
+        AMQPComponent component = new AMQPComponent();
         component.setConnectionFactory(cf);
 
         CamelContext context = new DefaultCamelContext();
-        context.addComponent("sjms", component);
+        context.addComponent("amqp", component);
         context.addRoutes(new RouteBuilder() {
 
             @Override
             public void configure() {
-                from("direct:start").to("sjms:queue:camel-sjms-example");
+                from("direct:start").to("amqp:queue:camel-amqp-example");
             }
         });
 
@@ -65,16 +65,16 @@ public class CamelJMSSender {
     }
 
     public static void main(String[] args) {
-        System.out.println("Running Apache Camel SJMS AMQP Sender example");
+        System.out.println("Running Apache Camel AMQP Sender example");
 
-        CamelJMSSender example = new CamelJMSSender();
+        CamelAMQPSender example = new CamelAMQPSender();
 
         try {
             example.runExample();
         } catch (Exception ex) {
-            System.out.println("Error in Apache Camel SJMS AMQP Sender example: " + ex.getMessage());
+            System.out.println("Error in Apache Camel AMQP Sender example: " + ex.getMessage());
         }
 
-        System.out.println("Completed Apache Camel SJMS AMQP Sender example");
+        System.out.println("Completed Apache Camel AMQP Sender example");
     }
 }
