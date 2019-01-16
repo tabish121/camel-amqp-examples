@@ -22,14 +22,17 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.amqp.AMQPComponent;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.qpid.jms.JmsConnectionFactory;
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 public class CamelAMQPSender {
 
     public void runExample() throws Exception {
         JmsConnectionFactory cf = new JmsConnectionFactory("amqp://localhost:5672");
+        JmsPoolConnectionFactory pooledCF = new JmsPoolConnectionFactory();
+        pooledCF.setConnectionFactory(cf);
 
         AMQPComponent component = new AMQPComponent();
-        component.setConnectionFactory(cf);
+        component.setConnectionFactory(pooledCF);
 
         CamelContext context = new DefaultCamelContext();
         context.addComponent("amqp", component);
@@ -58,6 +61,7 @@ public class CamelAMQPSender {
         }
 
         context.stop();
+        pooledCF.stop();
 
         if (failure != null) {
             throw failure;
